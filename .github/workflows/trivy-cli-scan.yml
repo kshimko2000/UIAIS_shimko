@@ -1,0 +1,32 @@
+name: Trivy CLI image scan (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trivy-cli-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (optional)
+        uses: actions/checkout@v4
+
+      - name: Install Trivy (official install script)
+        run: |
+          # Указываем конкретную версию Trivy — безопаснее фиксировать тэг
+          TRIVY_VERSION="v0.67.2"
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
+          trivy --version
+
+      - name: Run trivy image scan (fail on CRITICAL)
+        env:
+          IMAGE_REF: "docker.io/grpc/php:latest"
+        run: |
+          echo "Scanning image: $IMAGE_REF"
+          # trivy вернёт ненулевой exit code (1) только если найдены уязвимости уровня CRITICAL
+          trivy image --exit-code 1 --severity CRITICAL "$IMAGE_REF" | tee trivy-results.txt
+
+      - name: Show Trivy output (always)
+        if: always()
+        run: |
+          echo "=== Trivy results ==="
+          if [ -f trivy-results.txt ]; then cat trivy-results.txt; else echo "No results file"; fi
