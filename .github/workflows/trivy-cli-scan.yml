@@ -19,7 +19,7 @@ jobs:
 
       - name: Run trivy image scan (fail on CRITICAL)
         env:
-          IMAGE_REF: "docker.io/grpc/php:latest"
+          IMAGE_REF: "grpc/csm-o11y-example-go-client:v1.69.4"
         run: |
           echo "Scanning image: $IMAGE_REF"
           # trivy вернёт ненулевой exit code (1) только если найдены уязвимости уровня CRITICAL
