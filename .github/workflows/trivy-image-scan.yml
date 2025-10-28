@@ -1,32 +1,27 @@
 name: Trivy image scan (manual)
+
 on:
   workflow_dispatch:
 
 jobs:
   trivy-scan:
-    name: Scan public grpc Docker image with Trivy
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy (action)
         uses: aquasecurity/trivy-action@v0.33.1
         with:
-          image-ref: 'grpc/csm-o11y-example-go-client:v1.69.4'
+          image-ref: 'docker.io/grpc/php:latest'
           scan-type: 'image'
-          exit-code: '1'
-          severity: 'CRITICAL'
+          exit-code: '1'        # вернёт код 1 при обнаружении указанных severity
+          severity: 'CRITICAL'  # интересуют только критические уязвимости
           format: 'table'
           output: 'trivy-results.txt'
 
-      - name: Show Trivy output (в логах workflow)
+      - name: Show Trivy output
         if: always()
         run: |
-          echo "=== Trivy results (if any) ==="
-          if [ -f trivy-results.txt ]; then
-            cat trivy-results.txt
-          else
-            echo "No trivy-results.txt produced or file is empty."
-          fi
+          echo "=== Trivy results ==="
+          [ -f trivy-results.txt ] && cat trivy-results.txt || echo "No output file"
