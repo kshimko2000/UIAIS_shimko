@@ -1,6 +1,4 @@
 name: Trivy image scan (manual)
-
-# запуск вручную через Actions -> Run workflow
 on:
   workflow_dispatch:
 
@@ -10,21 +8,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # (checkout не обязателен, но оставим — иногда нужен для артефактов)
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.28.0
         with:
-          # Образ из Docker Hub — замените на нужный (см. примеры ниже)
-          image-ref: 'docker.io/grpc/php:latest'
+          image-ref: 'grpc/csm-o11y-example-go-client:v1.69.4'
           scan-type: 'image'
-          # вернуть код ошибки 1 если найдены уязвимости с перечисленными уровнями
           exit-code: '1'
-          # интересует только CRITICAL
           severity: 'CRITICAL'
-          # необязательно: сохранить вывод в файл
           format: 'table'
           output: 'trivy-results.txt'
 
