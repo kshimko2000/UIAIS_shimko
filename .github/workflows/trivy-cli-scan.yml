@@ -12,7 +12,6 @@ jobs:
 
       - name: Install Trivy (official install script)
         run: |
-          # Указываем конкретную версию Trivy — безопаснее фиксировать тэг
           TRIVY_VERSION="v0.67.2"
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin "${TRIVY_VERSION}"
           trivy --version
@@ -22,7 +21,6 @@ jobs:
           IMAGE_REF: "grpc/csm-o11y-example-go-client:v1.69.4"
         run: |
           echo "Scanning image: $IMAGE_REF"
-          # trivy вернёт ненулевой exit code (1) только если найдены уязвимости уровня CRITICAL
           trivy image --exit-code 1 --severity CRITICAL "$IMAGE_REF" | tee trivy-results.txt
 
       - name: Show Trivy output (always)
